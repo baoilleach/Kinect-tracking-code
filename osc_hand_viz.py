@@ -108,11 +108,16 @@ def draw(server):
         glVertex3f(*server.rh[player])
         glVertex3f(*server.rs[player])
         glEnd()
-        emphasis_point(*server.rh[player], colour=(1.0,0.3,0.4))
-        emphasis_point(*server.lh[player])
+
+        x,y,z = server.rh[player]
+        emphasis_point(x, y, z, colour=(1.0,0.3,0.4))
+        x,y,z = server.lh[player]
+        emphasis_point(x, y, z)
         # And now, shoulder joints
-        emphasis_point(*server.ls[player], colour=(0.3, 0.3, 0.7))
-        emphasis_point(*server.rs[player], colour=(0.7, 0.2, 0.2))
+        x,y,z = server.ls[player]
+        emphasis_point(x, y, z, colour=(0.3, 0.3, 0.7))
+        x,y,z = server.rs[player]
+        emphasis_point(x, y, z, colour=(0.7, 0.2, 0.2))
         
 
 def main():
