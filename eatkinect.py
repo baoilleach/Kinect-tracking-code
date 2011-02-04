@@ -7,7 +7,7 @@ class EatKinectData(liblo.Server):
     def __init__(self, port):
         try:
             super(EatKinectData, self).__init__(port)
-            self.add_method("/joint", 'iffffff', self.joint_callback)
+            self.add_method("/hands", 'iffffff', self.joint_callback)
             
             # register a fallback for unhandled messages
             self.add_method(None, None, self.fallback)
@@ -18,7 +18,7 @@ class EatKinectData(liblo.Server):
 
     def joint_callback(self, path, args):
         i, rx, ry, rz, lx, ly, lz = args
-        print "User:%s - Joints (%s,%s,%s), (%s,%s,%s)" % (i, rx, ry, rz, lx, ly, lz)
+        print "User:%s - Hands (%s,%s,%s), (%s,%s,%s)" % (i, rx, ry, rz, lx, ly, lz)
     
     def fallback(self, path, args, types, src):
         print "got unknown message '%s' from '%s'" % (path, src.get_url())
