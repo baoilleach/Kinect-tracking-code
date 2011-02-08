@@ -137,6 +137,7 @@ def main():
 
     frames = 0
     ticks = pygame.time.get_ticks()
+    output = open("tmp.txt", "w")
     while 1:
         event = pygame.event.poll()
         if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
@@ -149,11 +150,13 @@ def main():
             # Only send real data
             for target in targets:
                 liblo.send(target, "/hands", player, *(server.rh[player] + server.lh[player]))
+                print >> output, server.rh[player]
+                
                 liblo.send(target, "/shoulders", player, *(server.rs[player] + server.ls[player]))
                 liblo.send(target, "/combined", player, *(server.rh[player] + server.lh[player]+server.rs[player] + server.ls[player]))
         
         frames = frames+1
-
+    output.close()
     print "fps:  %d" % ((frames*1000)/(pygame.time.get_ticks()-ticks))
 
 
