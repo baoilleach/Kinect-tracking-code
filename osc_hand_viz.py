@@ -15,6 +15,23 @@ server = OSCServer(7110)
 rquad = 0.0
 rq_diff = 0.15
 
+class MovingAverage(object):
+    def __init__(self, size):
+        self.size = size
+        self.data = []
+        for i in range(size):
+            self.data.append([0.5] * 6)
+    def store(self, values):
+        self.data.pop(0)
+        self.data.append(values)
+    def get(self):
+        totals = [0] * 6
+        for x in self.data:
+            for i in range(6):
+                totals[i] += x[i]
+        answer = [x/float(self.size) for x in totals]
+        return answer
+
 def resize((width, height)):
     if height==0:
         height=1
@@ -137,7 +154,9 @@ def main():
 
     frames = 0
     ticks = pygame.time.get_ticks()
-    output = open("tmp.txt", "w")
+
+    mov_average = MovingAverage(20)
+##    output = open("tmp.txt", "w")
     while 1:
         event = pygame.event.poll()
         if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
@@ -149,14 +168,16 @@ def main():
         for player in (x for x in server.lh.keys() if server.lh[x][0] > -10.0):
             # Only send real data
             for target in targets:
-                liblo.send(target, "/hands", player, *(server.rh[player] + server.lh[player]))
-                print >> output, server.rh[player]
+                mov_average.store(server.rh[player] + server.lh[player])
+                values = mov_average.get()
+                liblo.send(target, "/hands", player, *values)
+##                print >> output, server.rh[player]
                 
                 liblo.send(target, "/shoulders", player, *(server.rs[player] + server.ls[player]))
                 liblo.send(target, "/combined", player, *(server.rh[player] + server.lh[player]+server.rs[player] + server.ls[player]))
         
         frames = frames+1
-    output.close()
+##    output.close()
     print "fps:  %d" % ((frames*1000)/(pygame.time.get_ticks()-ticks))
 
 
